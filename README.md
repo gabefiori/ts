@@ -50,3 +50,12 @@ For more information about command-line options, use:
 ```sh
 ts --help
 ```
+
+## Adding a shortcut to tmux
+To bind a key to create a new window and run the `ts` command, add the following line to your `.tmux.conf` file:
+
+```bash
+bind-key -r f run-shell "tmux neww ts"
+```
+
+The new window will close automatically after the command completes.
