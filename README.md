@@ -3,6 +3,8 @@
 Tmux Sessionizer is a tool for navigating through folders and projects as tmux sessions.
 Inspired by ThePrimeagen's [tmux-sessionizer](https://github.com/ThePrimeagen/.dotfiles/blob/master/bin/.local/scripts/tmux-sessionizer), this version has been modified to fit my preferences.
 
+https://github.com/user-attachments/assets/7b20ce0d-41bd-4144-9111-93170380da0e
+
 ## Features
 - **navigate directories**: switch between directories and projects as tmux sessions.
 - **custom configuration**: configure targets and session options through a JSON file.
