@@ -14,9 +14,21 @@ func generatePath(dirs map[string]struct{}, elem ...string) {
 	dirs[filepath.Join(elem...)] = struct{}{}
 }
 
+func testFindSingle(t *testing.T) {
+	tempDir := t.TempDir()
+	defer os.RemoveAll(tempDir)
+
+	assert.NoError(t, FindSingle(tempDir))
+}
+
 func TestFind(t *testing.T) {
 	tempDir := t.TempDir()
 	tempDir2 := t.TempDir()
+
+	defer func() {
+		os.RemoveAll(tempDir)
+		os.RemoveAll(tempDir2)
+	}()
 
 	dirs := make(map[string]struct{})
 
@@ -43,7 +55,6 @@ func TestFind(t *testing.T) {
 	// Depth 0
 	foundDirs, err := Find(tempDir, 0)
 	assert.NoError(t, err)
-
 
 	assert.Len(t, foundDirs, 1)
 

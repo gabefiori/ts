@@ -24,7 +24,7 @@ func Find(rootDir string, maxDepth uint8) ([]string, error) {
 		return nil, err
 	}
 
-	isDir, err := IsDirectory(rootDir)
+	isDir, err := isDirectory(rootDir)
 
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func Find(rootDir string, maxDepth uint8) ([]string, error) {
 	// PERF: Depth 0 and depth 1 are handled separately to improve performance (approximately 90% faster).
 	// Depth 0
 	if maxDepth == 0 && isDir {
-		return []string{UnexpandPath(rootDir, homeDir)}, nil
+		return []string{unexpandPath(rootDir, homeDir)}, nil
 	}
 
 	// Depth 1
@@ -63,11 +63,11 @@ func findDepthOne(rootDir, homeDir string) ([]string, error) {
 		}
 
 		if info.IsDir() {
-			paths = append(paths, UnexpandPath(entryPath, homeDir))
+			paths = append(paths, unexpandPath(entryPath, homeDir))
 		}
 	}
 
-	paths = append(paths, UnexpandPath(rootDir, homeDir))
+	paths = append(paths, unexpandPath(rootDir, homeDir))
 	return paths, nil
 }
 
@@ -88,7 +88,7 @@ func findGreaterDepth(rootDir, homeDir string, maxDepth uint8) ([]string, error)
 			return err
 		}
 
-		paths = append(paths, UnexpandPath(path, homeDir))
+		paths = append(paths, unexpandPath(path, homeDir))
 		return nil
 	}
 
@@ -101,11 +101,31 @@ func findGreaterDepth(rootDir, homeDir string, maxDepth uint8) ([]string, error)
 	return paths, nil
 }
 
-func UnexpandPath(path, homeDir string) string {
+func FindSingle(path string) error {
+	target, err := hd.Expand(path)
+
+	if err != nil {
+		return err
+	}
+
+	isValidTarget, err := isDirectory(target)
+
+	if err != nil {
+		return err
+	}
+
+	if !isValidTarget {
+		return errors.New("Invalid target. Not a directory.")
+	}
+
+	return nil
+}
+
+func unexpandPath(path, homeDir string) string {
 	return strings.Replace(path, homeDir, "~", 1)
 }
 
-func IsDirectory(path string) (bool, error) {
+func isDirectory(path string) (bool, error) {
 	info, err := os.Stat(path)
 
 	if err != nil {

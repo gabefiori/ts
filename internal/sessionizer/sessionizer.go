@@ -34,6 +34,8 @@ func Run(cfg *config.Config) error {
 	}
 
 	if cfg.Filter != "" {
+		// In this case, we delegate the responsibility of filtering to the selector.
+		// This way, we avoid losing any targets.
 		cfg.Selector = append(cfg.Selector, "--query="+cfg.Filter)
 	}
 
@@ -48,6 +50,18 @@ func Run(cfg *config.Config) error {
 	}
 
 	if err := runTmux(selected); err != nil {
+		return utils.NewErrorWithPrefix("Tmux", err)
+	}
+
+	return nil
+}
+
+func RunSingle(target string) error {
+	if err := targets.FindSingle(target); err != nil {
+		return utils.NewErrorWithPrefix("Tmux Sessionizer", err)
+	}
+
+	if err := runTmux(target); err != nil {
 		return utils.NewErrorWithPrefix("Tmux", err)
 	}
 
