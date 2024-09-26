@@ -13,6 +13,7 @@ import (
 func Run() error {
 	var path string
 	var filter string
+	var target string
 	var list bool
 
 	app := &cli.App{
@@ -34,6 +35,13 @@ func Run() error {
 				Value:       "",
 				Destination: &filter,
 			},
+			&cli.StringFlag{
+				Name:        "target",
+				Aliases:     []string{"t"},
+				Usage:       "Specify a target (e.g., path) to switch or attach to.",
+				Value:       "",
+				Destination: &target,
+			},
 			&cli.BoolFlag{
 				Name:        "list",
 				Aliases:     []string{"l"},
@@ -43,6 +51,10 @@ func Run() error {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
+			if target != "" {
+				return sessionizer.RunSingle(target)
+			}
+
 			cliCfg := config.Cli{
 				Path:   path,
 				Filter: filter,
