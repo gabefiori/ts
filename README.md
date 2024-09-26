@@ -30,7 +30,7 @@ Create a configuration file at `~/.config/ts/config.json`:
       },
       {
          "path":"/home/you/your_other/path",
-         "depth":0
+         "depth":3
       }
    ],
    "selector":[
@@ -46,6 +46,26 @@ Create a configuration file at `~/.config/ts/config.json`:
 To start the sessionizer, run the following command:
 ```sh
 ts
+```
+
+To list all of your available targets, use:
+```sh
+ts -l
+
+# example output
+~/your_target
+~/your_target/depth_1
+~/your_target/depth_1/depth_2
+```
+
+To attach to or switch to a target (it doesn't have to be in your config), use:
+```sh
+ts -t "~/other_target"
+```
+
+To start with a pre-filtered result, use:
+```sh
+ts -f "some_filter"
 ```
 
 For more information about command-line options, use:
