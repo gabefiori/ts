@@ -124,37 +124,58 @@ func runTmux(target string) error {
 }
 
 func generateTargets(configTargets []config.Target) ([]string, error) {
-	var (
-		targetMap = make(map[string]struct{})
-		errs      []error
-		mu        sync.Mutex
-		wg        sync.WaitGroup
-	)
+	targetCh := make(chan string, len(configTargets)*10)
+	errCh := make(chan error, len(configTargets))
 
-	for configTarget := range slices.Values(configTargets) {
+	var wg sync.WaitGroup
+
+	for _, configTarget := range configTargets {
 		wg.Add(1)
 
 		go func(ct config.Target) {
 			defer wg.Done()
-
 			foundTargets, err := targets.Find(ct.Path, ct.Depth)
 
-			mu.Lock()
-			defer mu.Unlock()
-
 			if err != nil {
-				errs = append(errs, err)
+				errCh <- err
 				return
 			}
 
-			for fd := range slices.Values(foundTargets) {
-				targetMap[fd] = struct{}{}
+			for _, fd := range foundTargets {
+				targetCh <- fd
 			}
 
 		}(configTarget)
 	}
 
-	wg.Wait()
+	go func() {
+		wg.Wait()
+
+		close(targetCh)
+		close(errCh)
+	}()
+
+	targetMap := make(map[string]struct{})
+	var errs []error
+
+	for targetCh != nil && errCh != nil {
+		select {
+		case target, ok := <-targetCh:
+			if !ok {
+				targetCh = nil
+				break
+			}
+
+			targetMap[target] = struct{}{}
+		case err, ok := <-errCh:
+			if !ok {
+				errCh = nil
+				break
+			}
+
+			errs = append(errs, err)
+		}
+	}
 
 	if len(errs) > 0 {
 		return nil, errors.Join(errs...)

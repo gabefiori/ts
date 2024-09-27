@@ -5,8 +5,8 @@ import (
 	"runtime/debug"
 
 	"github.com/gabefiori/ts/config"
-	"github.com/gabefiori/ts/internal/sessionizer"
 	"github.com/gabefiori/ts/internal/errutil"
+	"github.com/gabefiori/ts/internal/sessionizer"
 	"github.com/urfave/cli/v2"
 )
 
