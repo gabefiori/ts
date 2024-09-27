@@ -1,9 +1,11 @@
 package sessionizer
 
 import (
+	"bytes"
 	"errors"
-	"fmt"
+	"io"
 	"maps"
+	"os"
 	"path/filepath"
 	"slices"
 	"sort"
@@ -12,9 +14,9 @@ import (
 
 	"github.com/gabefiori/gotmux"
 	"github.com/gabefiori/ts/config"
+	"github.com/gabefiori/ts/internal/errutil"
 	"github.com/gabefiori/ts/internal/selector"
 	"github.com/gabefiori/ts/internal/targets"
-	"github.com/gabefiori/ts/internal/errutil"
 )
 
 func Run(cfg *config.Config) error {
@@ -29,7 +31,7 @@ func Run(cfg *config.Config) error {
 			filterTargets(cfg.Filter, &allTargets)
 		}
 
-		fmt.Println(strings.Join(allTargets, "\n"))
+		PrintList(allTargets)
 		return nil
 	}
 
@@ -66,6 +68,20 @@ func RunSingle(target string) error {
 	}
 
 	return nil
+}
+
+func PrintList(allTargets []string) {
+	var result []byte
+
+	for i, target := range allTargets {
+		result = append(result, target...)
+
+		if i < len(allTargets)-1 {
+			result = append(result, '\n')
+		}
+	}
+
+	io.Copy(os.Stdout, bytes.NewBuffer(result))
 }
 
 func filterTargets(filter string, targets *[]string) {
