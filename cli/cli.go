@@ -6,7 +6,7 @@ import (
 
 	"github.com/gabefiori/ts/config"
 	"github.com/gabefiori/ts/internal/sessionizer"
-	"github.com/gabefiori/ts/internal/utils"
+	"github.com/gabefiori/ts/internal/errutil"
 	"github.com/urfave/cli/v2"
 )
 
@@ -64,7 +64,7 @@ func Run() error {
 			cfg, err := config.Load(cliCfg)
 
 			if err != nil {
-				return utils.NewErrorWithPrefix("Config", err)
+				return errutil.NewError(errutil.ConfigErr, err)
 			}
 
 			return sessionizer.Run(cfg)

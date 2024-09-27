@@ -14,14 +14,14 @@ import (
 	"github.com/gabefiori/ts/config"
 	"github.com/gabefiori/ts/internal/selector"
 	"github.com/gabefiori/ts/internal/targets"
-	"github.com/gabefiori/ts/internal/utils"
+	"github.com/gabefiori/ts/internal/errutil"
 )
 
 func Run(cfg *config.Config) error {
 	allTargets, err := generateTargets(cfg.Targets)
 
 	if err != nil {
-		return utils.NewErrorWithPrefix("Tmux Sessionizer", err)
+		return errutil.NewError(errutil.SessionizerErr, err)
 	}
 
 	if cfg.List {
@@ -42,7 +42,7 @@ func Run(cfg *config.Config) error {
 	selected, err := selector.Run(allTargets, cfg.Selector)
 
 	if err != nil {
-		return utils.NewErrorWithPrefix("Selector", err)
+		return errutil.NewError(errutil.SelectorErr, err)
 	}
 
 	if selected == "" {
@@ -50,7 +50,7 @@ func Run(cfg *config.Config) error {
 	}
 
 	if err := runTmux(selected); err != nil {
-		return utils.NewErrorWithPrefix("Tmux", err)
+		return errutil.NewError(errutil.TmuxErr, err)
 	}
 
 	return nil
@@ -58,11 +58,11 @@ func Run(cfg *config.Config) error {
 
 func RunSingle(target string) error {
 	if err := targets.FindSingle(target); err != nil {
-		return utils.NewErrorWithPrefix("Tmux Sessionizer", err)
+		return errutil.NewError(errutil.SessionizerErr, err)
 	}
 
 	if err := runTmux(target); err != nil {
-		return utils.NewErrorWithPrefix("Tmux", err)
+		return errutil.NewError(errutil.TmuxErr, err)
 	}
 
 	return nil

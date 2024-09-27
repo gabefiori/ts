@@ -4,6 +4,7 @@ import (
 	"maps"
 	"strings"
 
+	"github.com/gabefiori/ts/internal/errutil"
 	fzf "github.com/junegunn/fzf/src"
 )
 
@@ -30,7 +31,7 @@ func Run(items []string, opts []string) (string, error) {
 	options, err := fzf.ParseOptions(true, mergeConfigs(opts))
 
 	if err != nil {
-		return "", err
+		return "", errutil.NewError("Selector", err)
 	}
 
 	options.Input = input
@@ -40,7 +41,7 @@ func Run(items []string, opts []string) (string, error) {
 
 	close(output)
 
-	return result, err
+	return result, nil
 }
 
 func mergeConfigs(config []string) []string {

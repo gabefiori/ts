@@ -1,12 +1,15 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/gabefiori/ts/cli"
-	"log"
 )
 
 func main() {
 	if err := cli.Run(); err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
